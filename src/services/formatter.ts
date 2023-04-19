@@ -1,6 +1,6 @@
 export class Formatter {
-	constructor() {
-		console.log("Jes suis dans le formatNumber", Math.random())
+	constructor(name: string) {
+		console.log("Je suis dans le formatNumber", name)
 	}
 	formatNumber(value: string, willHaveSpaces: boolean = true, length: number, groupLength: number): string {
 		// replace all non-numeric characters with empty string

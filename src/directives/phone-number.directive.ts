@@ -1,6 +1,12 @@
 import { Formatter } from "../services/formatter"
 
 export class PhoneNumberDirective {
+	static providers = [
+		{
+			provide: "formatter",
+			constructor: () => new Formatter("phone-number"),
+		},
+	]
 	static selector = "phone-number"
 	private willHaveSpaces = true
 
