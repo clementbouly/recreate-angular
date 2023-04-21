@@ -1,21 +1,35 @@
+import { ChronoDirective } from "./directives/chrono.directive"
 import { CreditCardDirective } from "./directives/credit-card.directive"
 import { PhoneNumberDirective } from "./directives/phone-number.directive"
 import { Angular } from "./framework/framework"
+import { CreditCardVerifier } from "./services/credit-card-verifier"
 import { Formatter } from "./services/formatter"
-import { Verifier } from "./services/verifier"
-import { ProvidersMetadata } from "./types/types"
 
-const declarations = [PhoneNumberDirective, CreditCardDirective]
-
-const providers: ProvidersMetadata = [
-	{
-		provide: "formatter",
-		constructor: () => new Formatter("global"),
-	},
-	{
-		provide: "verifier",
-		constructor: () => new Verifier(),
-	},
-]
-
-Angular.bootstrapApplication({ declarations, providers })
+/**
+ * Notre framework : il met en relation les directives et les éléments HTML.
+ *
+ * Il est extensible. Il suffit d'ajouter ou de supprimer des directives
+ * à partir du tableau ci-dessus et le framework sera capable de faire les rattachements
+ * avec les éléments HTML concernés par les SELECTORS de nos directives
+ */
+Angular.bootstrapApplication({
+	/**
+	 * La liste des directives que le Framework devra connaître et
+	 * mettre en oeuvre
+	 */
+	declarations: [PhoneNumberDirective, CreditCardDirective, ChronoDirective],
+	/**
+	 * La liste des définitions de services que la Framework devra créer si les
+	 * directives lui demandent ces services par injection de dépendances
+	 */
+	providers: [
+		{
+			provide: "formatter",
+			construct: () => new Formatter("global"),
+		},
+		{
+			provide: "verifier",
+			construct: () => new CreditCardVerifier(),
+		},
+	],
+})

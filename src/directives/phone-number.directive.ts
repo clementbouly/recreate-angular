@@ -4,46 +4,54 @@ import { HostListener } from "../decorators/host-listener"
 import { Input } from "../decorators/input"
 import { Formatter } from "../services/formatter"
 
+/**
+ * Directive PhoneNumberDirective
+ *
+ * Permet de formater un input avec le format d'un numéro de téléphone
+ */
 @Directive({
-	selector: "phone-number",
+	/**
+	 * Le sélecteur CSS qui permettra de brancher la directive à des éléments HTML
+	 */
+	selector: "[phone-number]",
+
+	/**
+	 * Les définitions de service dont a besoin cette directive spécifiquement
+	 */
 	providers: [
 		{
 			provide: "formatter",
-			constructor: () => new Formatter("phone-number"),
+			construct: () => new Formatter("spécifique"),
 		},
 	],
 })
 export class PhoneNumberDirective {
-	static bindings = [
-		{ propName: "borderColor", attrName: "style.borderColor" },
-		{ propName: "placeHolderText", attrName: "placeholder" },
-	]
-
+	/**
+	 * Permet de savoir si on souhaite formater avec des espaces ou non
+	 */
 	@Input("with-spaces")
-	private willHaveSpaces = true
+	willHaveSpaces = true
 
+	/**
+	 * Permet de connaître la couleur de la bordure
+	 */
 	@Input("border-color")
 	@HostBinding("style.borderColor")
 	borderColor = "red"
 
-	@HostBinding("placeholder")
-	placeHolderText = "Phone number"
+	@HostBinding("value")
+	value = ""
 
-	constructor(public element: HTMLInputElement, private formatter: Formatter) {}
+	constructor(public element: HTMLElement, private formatter: Formatter) {}
 
-	@HostListener("click")
-	onFocus() {
-		this.placeHolderText = ""
-		this.element.style.borderColor = "purple"
-	}
-
-	@HostListener("input", ["event.target"])
-	formatPhoneNumber(element: HTMLInputElement) {
-		element.value = this.formatter.formatNumber(element.value, this.willHaveSpaces, 10, 2)
-	}
-
-	@HostListener("click", ["event.clientX", 20])
-	onClick(coordX: number, age: number) {
-		console.log("click", coordX, age)
+	/**
+	 * Formate la valeur d'un <input> en suivant les règles d'un
+	 * numéro de téléphone
+	 *
+	 * @param element L'<input> dont on veut formater la valeur
+	 */
+	@HostListener("input", ["event.target.value"])
+	formatPhoneNumber(value: string) {
+		this.value = this.formatter.formatNumber(value, 10, 2, this.willHaveSpaces)
 	}
 }
