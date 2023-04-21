@@ -1,24 +1,49 @@
+import { Directive } from "../decorators/directive"
+import { HostBinding } from "../decorators/host-binding"
+import { HostListener } from "../decorators/host-listener"
+import { Input } from "../decorators/input"
 import { Formatter } from "../services/formatter"
 
-export class PhoneNumberDirective {
-	static providers = [
+@Directive({
+	selector: "phone-number",
+	providers: [
 		{
 			provide: "formatter",
 			constructor: () => new Formatter("phone-number"),
 		},
+	],
+})
+export class PhoneNumberDirective {
+	static bindings = [
+		{ propName: "borderColor", attrName: "style.borderColor" },
+		{ propName: "placeHolderText", attrName: "placeholder" },
 	]
-	static selector = "phone-number"
+
+	@Input("with-spaces")
 	private willHaveSpaces = true
 
-	constructor(public element: HTMLInputElement, private formatter: Formatter) {
-		this.element.addEventListener("input", () => this.formatPhoneNumber())
-		if (this.element.hasAttribute("with-spaces")) {
-			this.willHaveSpaces = this.element.getAttribute("with-spaces") === "true"
-		}
+	@Input("border-color")
+	@HostBinding("style.borderColor")
+	borderColor = "red"
+
+	@HostBinding("placeholder")
+	placeHolderText = "Phone number"
+
+	constructor(public element: HTMLInputElement, private formatter: Formatter) {}
+
+	@HostListener("click")
+	onFocus() {
+		this.placeHolderText = ""
+		this.element.style.borderColor = "purple"
 	}
 
-	formatPhoneNumber() {
-		const value = this.formatter.formatNumber(this.element.value, this.willHaveSpaces, 10, 2)
-		this.element.value = value
+	@HostListener("input", ["event.target"])
+	formatPhoneNumber(element: HTMLInputElement) {
+		element.value = this.formatter.formatNumber(element.value, this.willHaveSpaces, 10, 2)
+	}
+
+	@HostListener("click", ["event.clientX", 20])
+	onClick(coordX: number, age: number) {
+		console.log("click", coordX, age)
 	}
 }

@@ -20,13 +20,33 @@ export class Framework {
 	 */
 	bootstrapApplication(metadata: Module) {
 		this.directives = metadata.declarations
-		this.providers = metadata.providers
+		this.providers = metadata.providers!
 
 		this.directives.forEach((directive) => {
 			const elements = document.querySelectorAll<HTMLInputElement>(`[${directive.selector}]`)
 			elements.forEach((element) => {
 				const parameters = this.analyseDirectiveConstructor(directive, element)
-				Reflect.construct(directive, parameters)
+				const directiveInstance: any = Reflect.construct(directive, parameters)
+
+				const proxy = new Proxy(directiveInstance, {
+					set(target, property, value) {
+						target[property] = value
+						if (!directive.bindings) {
+							return true
+						}
+
+						const binding = directive.bindings.find((binding) => binding.propName === property)
+
+						if (!binding) {
+							return true
+						}
+						element.setAttribute(binding.attrName, value)
+
+						return true
+					},
+				})
+
+				proxy.init()
 			})
 		})
 	}
