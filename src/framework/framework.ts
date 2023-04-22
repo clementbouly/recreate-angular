@@ -43,7 +43,6 @@ export class Framework {
 	private instanciateAndAttachDirectives() {
 		this.directives.forEach((directive) => {
 			// Pour chaque directive, on récupère les éléments concernés par le sélecteur
-			console.log(directive.selector)
 
 			const elements = document.querySelectorAll<HTMLElement>(directive.selector)
 

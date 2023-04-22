@@ -159,3 +159,9 @@ export type FrameworkModule = {
 	 */
 	providers?: Providers
 }
+
+export type ComponentMetadata = {
+	selector: string
+	providers?: any
+	template: string
+}
